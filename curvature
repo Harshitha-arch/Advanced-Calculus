@@ -1,0 +1,79 @@
+import pandas as pd
+import numpy as np
+from scipy.signal import savgol_filter
+
+
+# STEP 1 — Load CSV
+
+df = pd.read_csv("1.csv")
+
+print("CSV loaded successfully.")
+print(df.head())
+
+
+
+# STEP 2 — Curvature Function (fully documented)
+
+def compute_curvature(x, y, dt=0.01, smooth_window=21, polyorder=3):
+    """
+    Computes curvature κ(t) for a 2D trajectory (x(t), y(t)).
+
+    Curvature formula:
+        κ = |x' y'' − y' x''| / ( (x'^2 + y'^2)^(3/2) )
+
+    Parameters:
+        x, y          : arrays containing position values
+        dt            : time step (sampling interval)
+        smooth_window : smoothing window size for stable derivatives
+        polyorder     : polynomial order for smoothing
+    
+    Returns:
+        curvature     : array of curvature values over time
+    """
+
+    # Smooth signals to prevent noise in derivatives
+    x_s = savgol_filter(x, smooth_window, polyorder)
+    y_s = savgol_filter(y, smooth_window, polyorder)
+
+    # First derivative
+    dx = np.gradient(x_s, dt)
+    dy = np.gradient(y_s, dt)
+
+    # Second derivative
+    ddx = np.gradient(dx, dt)
+    ddy = np.gradient(dy, dt)
+
+    # Curvature numerator & denominator
+    numerator = np.abs(dx * ddy - dy * ddx)
+    denominator = (dx**2 + dy**2)**1.5
+    denominator[denominator == 0] = 1e-8  # avoid division by zero
+
+    curvature = numerator / denominator
+    return curvature
+
+
+
+# STEP 3 — Run curvature on all 4 CoP trajectories
+
+pairs = [('X1','Z1'), ('X3','Z3'), ('X5','Z5'), ('X7','Z7')]
+curvature_results = {}
+
+for x_col, z_col in pairs:
+    x = df[x_col].values
+    y = df[z_col].values
+
+    curv = compute_curvature(x, y)
+
+    curvature_results[f"{x_col}_{z_col}"] = {
+        "mean_curvature": np.mean(curv),
+        "max_curvature": np.max(curv)
+    }
+
+
+# STEP 4 — Print results clearly
+
+print("\n===== CURVATURE RESULTS =====")
+for trial, values in curvature_results.items():
+    print(f"\nTrajectory {trial}:")
+    print(f"Mean curvature: {values['mean_curvature']:.6f}")
+    print(f"Max curvature : {values['max_curvature']:.6f}")
