@@ -12,7 +12,6 @@ pairs = [('X1','Z1'), ('X3','Z3'), ('X5','Z5'), ('X7','Z7')]
 dt = 0.01
 
 def compute_curvature(x, y, dt=0.01, smooth_window=21, polyorder=3):
-
     x_s = savgol_filter(x, smooth_window, polyorder)
     y_s = savgol_filter(y, smooth_window, polyorder)
 
@@ -30,7 +29,6 @@ def compute_curvature(x, y, dt=0.01, smooth_window=21, polyorder=3):
     return curvature
 
 def compute_integrated_jerk(x, y, dt=0.01, smooth_window=21, polyorder=3):
-
     x_s = savgol_filter(x, smooth_window, polyorder)
     y_s = savgol_filter(y, smooth_window, polyorder)
 
@@ -48,9 +46,7 @@ def compute_integrated_jerk(x, y, dt=0.01, smooth_window=21, polyorder=3):
 
     return integrated_jerk, jerk_mag
 
-
 def compute_rms_radial_distance(x, y):
-
     mean_x = np.mean(x)
     mean_y = np.mean(y)
 
@@ -59,9 +55,7 @@ def compute_rms_radial_distance(x, y):
 
     return rms_rd, r
 
-
 def compute_excursion_events(r, dt=0.01, threshold=None):
-
     if threshold is None:
         threshold = np.mean(r) + 2*np.std(r)
 
@@ -85,9 +79,11 @@ def compute_excursion_events(r, dt=0.01, threshold=None):
 
     return num_events, ttr_list, threshold
 
-
+# Dictionary to store results
 results = {}
 
+# Store trial names for bar charts
+trials = [f"{x}_{z}" for x, z in pairs]
 
 for x_col, z_col in pairs:
 
@@ -159,7 +155,7 @@ for x_col, z_col in pairs:
     plt.grid()
     plt.show()
 
-    # --- 4. Radial Distance + Threshold ---
+    # --- 4. RMS Radial Distance + Threshold ---
     plt.figure(figsize=(10,4))
     plt.plot(t, r_series, label="Radial Distance")
     plt.axhline(threshold, color='red', linestyle='--', label="Threshold")
@@ -170,9 +166,30 @@ for x_col, z_col in pairs:
     plt.grid()
     plt.show()
 
+# --- Time-to-Recovery / Excursions Bar Charts ---
 
+# 1. Mean TTR Bar Chart
+mean_ttr_values = [results[p]['mean_TTR'] for p in results]
+plt.figure(figsize=(8,5))
+plt.bar(trials, mean_ttr_values, color='orange')
+plt.title("Mean Time-to-Recovery per Trial")
+plt.ylabel("Mean TTR (s)")
+plt.xlabel("Trial")
+plt.grid(axis='y')
+plt.show()
+
+# 2. Number of Excursions Bar Chart
+num_excursions_values = [results[p]['num_excursions'] for p in results]
+plt.figure(figsize=(8,5))
+plt.bar(trials, num_excursions_values, color='green')
+plt.title("Number of Excursions per Trial")
+plt.ylabel("Number of Excursions")
+plt.xlabel("Trial")
+plt.grid(axis='y')
+plt.show()
+
+# --- Print Final Results ---
 print("\n\nFINAL RESULTS\n")
-
 for key, val in results.items():
     print(f"\n---- {key} ----")
     for metric, number in val.items():
