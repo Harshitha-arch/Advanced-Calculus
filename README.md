@@ -3,7 +3,7 @@
 This repository contains Python code for analyzing postural stability using Center of Pressure (CoP) trajectories.  
 The script computes four key balance metrics from raw CoP data collected from force platforms.
 
----
+
 
 ## Included Analysis Metrics
 
@@ -13,7 +13,6 @@ Measures how sharply the CoP path bends over time.
 - Output: mean curvature, max curvature  
 - Visualization: Curvature Time Series
 
----
 
 ### 2. Integrated Jerk
 Represents the smoothness of postural control.  
@@ -22,7 +21,7 @@ Represents the smoothness of postural control.
 - Output: integrated jerk (scalar), jerk time series  
 - Visualization: Jerk Time Series Plot
 
----
+
 
 ### 3. RMS Radial Distance (RMS-RD)
 Quantifies sway magnitude relative to the mean CoP position.  
@@ -30,7 +29,7 @@ Quantifies sway magnitude relative to the mean CoP position.
 - Output: RMS radial distance  
 - Visualization: Radial Distance plot
 
----
+
 
 ### 4. Time to Recovery (TTR) from Excursions
 Detects instability events where CoP exceeds a statistical threshold.  
@@ -39,7 +38,7 @@ Detects instability events where CoP exceeds a statistical threshold.
 - Output: num excursions, mean/max TTR  
 - Visualization: Radial Distance with Threshold
 
----
+
 
 ## Generated Plots
 The script outputs 4 plots for each CoP pair (`X1–Z1`, `X3–Z3`, `X5–Z5`, `X7–Z7`):
@@ -56,7 +55,7 @@ Place your input CoP file as:
 Your CSV must contain columns:  
 `X1, Z1, X3, Z3, X5, Z5, X7, Z7`
 
----
+
 
 ## How to Run
 
@@ -67,7 +66,7 @@ Your CSV must contain columns:
 - Visual plots  
 - Final numerical metrics printed in the terminal
 
----
+
 
 ## File Explanation
 
